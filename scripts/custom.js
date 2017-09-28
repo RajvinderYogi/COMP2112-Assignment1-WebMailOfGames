@@ -39,6 +39,79 @@ function Gamefunc(games){
   }
   }
 
+  let ComposeGame = document.querySelector('#compose');
+
+  ComposeGame.addEventListener('click', ComposeFunc);
+
+  function ComposeFunc(form){
+    form.preventDefault;
+    let composeHTML=`
+    <div class="pure-u-1">
+      <form class="pure-form pure-form-aligned" id="GameForm" name="NewGameForm">
+        <fieldset>
+          <div class="pure-control-group">
+            <label for="subject">Game Title</label>
+            <input name="subject" id="subj" type="text">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="publisher">Publisher</label>
+            <input name="publisher" id="publ" type="text">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="date">Year Published</label>
+            <input name="date" id="year" type="number" min="1900" max="2017">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="body">Description</label>
+            <textarea name="body" id="message" rows="3" cols="25"></textarea>
+          </div>
+
+          <div class="pure-control-group">
+            <label for="avtar">Avtar URL</label>
+            <input name="avatar" id="picture" type="text">
+          </div>
+
+          <div class="pure-control-group">
+            <label for="ifrmsrc">iFrame URL</label>
+            <input name="ifrmsrc" id="iframe" type="text">
+          </div>
+
+          <div class="pure-controls">
+            <button type="submit" class="pure-button pure-button-primary" id="send">Send</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>`;
+let GameForm = document.querySelector('#main')
+GameForm.innerHTML= composeHTML;
+
+
+let sendBtn = document.querySelector('#GameForm');
+
+sendBtn.addEventListener('submit', function(sent){
+      sent.preventDefault;
+      let NewGameObject = {
+        publisher : document.forms.NewGameForm.publisher.value,
+        avatar : document.forms.NewGameForm.avatar.value,
+        subject : document.forms.NewGameForm.subject.value,
+        body : document.forms.NewGameForm.body.value,
+        date : document.forms.NewGameForm.date.value,
+        ifrmsrc : document.forms.NewGameForm.ifrmsrc.value
+        
+      }
+      games.push(NewGameObject);
+      
+
+      LocalStorage();
+      let inboxGames = games.filter(game => !game.deleted);
+      render (inboxGames);
+});
+  }
+
+
 
   let TrashFolder = document.querySelector('#TrashFolder');
   

@@ -70,7 +70,7 @@ function GameBody(index, games){
           </div>
 
         <div class="email-content-controls pure-u-1-2">
-          <button data-id=${index} id="DelButton" class="secondary-button pure-button">${games[index].deleted === true ? 'Deleted' : 'Delete'}</button>
+          <button data-id=${index} id="DelButton" class="secondary-button pure-button ${games[index].deleted === true ? 'btn btn-danger' : ''}">${games[index].deleted === true ? 'Deleted' : 'Delete'}</button>
           <button data-id=${index} class="secondary-button pure-button">Archive</button>
           <button data-id=${index} class="secondary-button pure-button">Unread</button>
         </div>
@@ -85,10 +85,28 @@ function GameBody(index, games){
   main.innerHTML=BodyOfgame
 
   let DelButton = document.querySelector('#DelButton');
-  DelButton.addEventListener('click',function(e){
+  DelButton.addEventListener('click',function(delGame){
+    if(!games[this.dataset.id].deleted){
     games[this.dataset.id].deleted = true;
+    LocalStorage();
     let inboxGames = games.filter(game => !game.deleted);
     render (inboxGames);
+  }else{
+    delete  games[this.dataset.id].deleted;
+    let DeletedGames = games.filter(game => game.deleted);
+    render (DeletedGames);
+  }
   });
 }
+function LocalStorage(){
+  localStorage.setItem('items', JSON.stringify(games));
+}
+
+if(localStorage.getItem('items')){
+  games = JSON.parse(localStorage.getItem('items'));
+  let storage = games.filter(game => !game.deleted);
+  render (storage);
+}
+else{
 render(games);
+}

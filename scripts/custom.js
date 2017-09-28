@@ -1,5 +1,4 @@
 
-
 function render(games) {
 let snippet = `${games.map((game, index) =>` 
 <div class="email-item pure-g" data-id="${index}">
@@ -22,32 +21,42 @@ Gamefunc(games);
 }
 function Gamefunc(games){
   let Selected = 0;
-  let ListOfEmail = Array.from(document.querySelectorAll('[data-id]'));
-  ListOfEmail.map((List, index) => List.addEventListener('click', function(e){
-    ListOfEmail[Selected].classList.remove('email-item-selected');
+  let ListOfGames = Array.from(document.querySelectorAll('[data-id]'));
+  ListOfGames.map((List, index) => List.addEventListener('click', function(e){
+    ListOfGames[Selected].classList.remove('email-item-selected');
     List.classList.add('email-item-selected');
     Selected = index;
     GameBody(index, games);
   }));
   if (games.length > 0){
-    ListOfEmail[Selected].classList.add('email-item-selected')
+    ListOfGames[Selected].classList.add('email-item-selected')
     GameBody(Selected, games);
   }
-  let trash = document.querySelector('.pure-menu-link')
-  let BtnDelete = Array.from(document.querySelectorAll('[data-id]'));
-  BtnDelete.map((Btn, index) => Btn.addEventListener('click',function(Del){
-    Del.preventDefault();
-    if(games[this.dataset.id].Selected = true)
-    {
-      games.filter(function(deletegame){
-        games.move(trash);
-      })
-      console.info(`Unfollowed ${games[this.dataset.id].publisher}`);
-      }
-    render(games);
-  }));
-}
+  else
+  {
+    let main = document.querySelector('#main');
+    main.innerHTML = `<h1 class="alert alert-warning" style="margin-left:250px;"> Sorry! No games in this Folder </h1>`
+  }
+  }
 
+
+  let TrashFolder = document.querySelector('#TrashFolder');
+  
+    TrashFolder.addEventListener('click', function(trsh){
+      trsh.preventDefault;
+      let DeletedGames = games.filter(game => game.deleted);
+      render (DeletedGames);
+    });
+  
+  
+  
+    let InboxFolder = document.querySelector('#InboxFolder');
+    
+    InboxFolder.addEventListener('click', function(box){
+      box.preventDefault;
+      let inboxGames = games.filter(game => !game.deleted);
+      render (inboxGames);
+    });
 
 function GameBody(index, games){
       let BodyOfgame =`
@@ -61,18 +70,25 @@ function GameBody(index, games){
           </div>
 
         <div class="email-content-controls pure-u-1-2">
-          <button data-id=${index} class="secondary-button pure-button">Delete</button>
+          <button data-id=${index} id="DelButton" class="secondary-button pure-button">${games[index].deleted === true ? 'Deleted' : 'Delete'}</button>
           <button data-id=${index} class="secondary-button pure-button">Archive</button>
           <button data-id=${index} class="secondary-button pure-button">Unread</button>
         </div>
       </div>
 
       <div class="email-content-body">
-      <iframe src="${games[index].ifrmSrc}" height="600px" width="900px"></iframe>    
+      <iframe src="${games[index].ifrmSrc}" height="500px" width="850px"></iframe>    
       </div>
   </div>`;
 
   let main = document.querySelector('#main');
   main.innerHTML=BodyOfgame
+
+  let DelButton = document.querySelector('#DelButton');
+  DelButton.addEventListener('click',function(e){
+    games[this.dataset.id].deleted = true;
+    let inboxGames = games.filter(game => !game.deleted);
+    render (inboxGames);
+  });
 }
 render(games);

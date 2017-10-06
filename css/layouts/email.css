@@ -155,11 +155,11 @@ a {
         margin: 0.4em 0;
     }
 
-.email-item-selected {
+.game-item-selected {
     background: #eee;
 }
-.email-item-unread {
-    border-left: 6px solid #1b98f8;
+.unread {
+    border-left: 6px solid green;
 }
 
 /* Email Content Styles */

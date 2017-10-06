@@ -1,14 +1,17 @@
+//Java Script file for WebMail Of Games - Assignment1- Comp2112
+// Rajvinder Singh Yogi - 200353207 - IMDW
 
+// This function where games all are displayed
 function render(games) {
 let snippet = `${games.map((game, index) =>` 
 <div class="email-item pure-g" data-id="${index}">
 <div class="pure-u">
-    <img width="64" height="64" alt="avatar" class="email-avatar" src="${game.avatar}">
+    <img width="64" height="64" alt="" class="email-avatar" src="${games[index].avatar ? games[index].avatar:''}">
 </div>
 
 <div class="pure-u-3-4">
-    <h5 class="email-name">${game.publisher} ${game.date}</h5>
-    <h4 class="email-subject">${game.subject}</h4>
+    <h5 class="email-name">${games[index].publisher ? games[index].publisher:''} ${games[index].date ? games[index].date:''}</h5>
+    <h4 class="email-subject">${games[index].subject ? games[index].subject:''}</h4>
     <p class="email-desc">
         ${game.body.length > 80 ? `${game.body.substr(0,79)}...`: game.body}
     </p>
@@ -17,19 +20,24 @@ let snippet = `${games.map((game, index) =>`
 let GameColumn = document.getElementById('list');
 GameColumn.innerHTML = snippet;
 
-Gamefunc(games);
+Unread(games); //unread function called
+
+Gamefunc(games); // selected game function called
 }
+
+//function to give a visual so that game look selected
 function Gamefunc(games){
-  let Selected = 0;
+  let Selected = 0;  
   let ListOfGames = Array.from(document.querySelectorAll('[data-id]'));
   ListOfGames.map((List, index) => List.addEventListener('click', function(e){
-    ListOfGames[Selected].classList.remove('email-item-selected');
-    List.classList.add('email-item-selected');
+    ListOfGames[Selected].classList.remove('game-item-selected');
+    List.classList.add('game-item-selected');
     Selected = index;
     GameBody(index, games);
   }));
+
   if (games.length > 0){
-    ListOfGames[Selected].classList.add('email-item-selected')
+    ListOfGames[Selected].classList.add('game-item-selected')
     GameBody(Selected, games);
   }
   else
@@ -39,6 +47,19 @@ function Gamefunc(games){
   }
   }
 
+  //function to give visual indicator for unread games
+  // I tried much, but failed to implement logic, below is unread email JS but not working properly
+function Unread(games){
+  let SelectedGames = 0;
+  let UnreadGames = Array.from(document.querySelectorAll('[data-id]'));
+  UnreadGames.map((UnreadGame, index)=>UnreadGame.addEventListener('click',function(){
+    UnreadGames[SelectedGames].classList.add('unread');
+     UnreadGame.classList.remove('unread');
+     SelectedGames= index;
+  }));  
+}
+
+// compose button which shows form on click
   let ComposeGame = document.querySelector('#compose');
 
   ComposeGame.addEventListener('click', ComposeFunc);
@@ -88,7 +109,7 @@ function Gamefunc(games){
 let GameForm = document.querySelector('#main')
 GameForm.innerHTML= composeHTML;
 
-
+//send button which store to local storage and show in main body of game mailbox
 let sendBtn = document.querySelector('#GameForm');
 
 sendBtn.addEventListener('submit', function(sent){
@@ -102,17 +123,17 @@ sendBtn.addEventListener('submit', function(sent){
         ifrmsrc : document.forms.NewGameForm.ifrmsrc.value
         
       }
-      games.push(NewGameObject);
+      games.unshift(NewGameObject); // unshift used to display the new composed game on top
       
 
-      LocalStorage();
+      LocalStorage();//called local Storage function
       let inboxGames = games.filter(game => !game.deleted);
-      render (inboxGames);
+      render (inboxGames);// render inbox to display stored data
 });
   }
 
 
-
+//add event listener for click on trash link and show the games that has been deleted
   let TrashFolder = document.querySelector('#TrashFolder');
   
     TrashFolder.addEventListener('click', function(trsh){
@@ -122,7 +143,7 @@ sendBtn.addEventListener('submit', function(sent){
     });
   
   
-  
+//add event listener for click on inbox link and show the games.
     let InboxFolder = document.querySelector('#InboxFolder');
     
     InboxFolder.addEventListener('click', function(box){
@@ -130,33 +151,35 @@ sendBtn.addEventListener('submit', function(sent){
       let inboxGames = games.filter(game => !game.deleted);
       render (inboxGames);
     });
-
+//function to show the main body on right side of page
 function GameBody(index, games){
       let BodyOfgame =`
       <div class="email-content">
       <div class="email-content-header pure-g">
           <div class="pure-u-1-2">
-              <h1 class="email-content-title">${games[index].subject}</h1>
+              <h1 class="email-content-title">${games[index].subject ? games[index].subject:''}</h1>
               <p class="email-content-subtitle">
-                  From <a>'${games[index].publisher}'</a> <span>${games[index].date}</span>
+                  <a>${games[index].publisher ? games[index].publisher:''}</a> <span>${games[index].date ? games[index].date:''}</span>
               </p>
           </div>
 
         <div class="email-content-controls pure-u-1-2">
           <button data-id=${index} id="DelButton" class="secondary-button pure-button ${games[index].deleted === true ? 'btn btn-danger' : ''}">${games[index].deleted === true ? 'Deleted' : 'Delete'}</button>
           <button data-id=${index} class="secondary-button pure-button">Archive</button>
-          <button data-id=${index} class="secondary-button pure-button">Unread</button>
+          <button data-id=${index} id="UnreadButton" class="secondary-button pure-button">Unread</button>
         </div>
       </div>
 
       <div class="email-content-body">
-      <iframe src="${games[index].ifrmSrc}" height="500px" width="850px"></iframe>    
+      <iframe src="${games[index].ifrmSrc ? games[index].ifrmSrc:''}" height="500px" width="850px"></iframe>    
       </div>
   </div>`;
 
   let main = document.querySelector('#main');
   main.innerHTML=BodyOfgame
 
+
+// add eventlistener for click on delete button to delete the game and send that to trash 
   let DelButton = document.querySelector('#DelButton');
   DelButton.addEventListener('click',function(delGame){
     if(!games[this.dataset.id].deleted){
@@ -171,6 +194,8 @@ function GameBody(index, games){
   }
   });
 }
+
+//function to store the values at local storage
 function LocalStorage(){
   localStorage.setItem('items', JSON.stringify(games));
 }
